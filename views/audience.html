@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--char set (lang above)-->
+  <meta charset="utf-8">
+
+  <!--device/browser shizzle-->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!--meta content-->
+  <link rel="shortcut icon" href="favicon.ico" />
+  
+  <meta name="author" content="Ruth John (@rumyra)">
+  <meta name="dcterms.rightsHolder" content="Ruth John for Rumyra Ltd, United Kingdom, 2015">
+  <title>Get your Ruby!</title>
+
+  <link href="css/audience.css" rel="stylesheet" type="text/css">
+  <script src="https://js.pusher.com/3.0/pusher.min.js"></script>
+  
+</head>
+<body class="audience">
+
+<div id="pusher" data-key="{{PUSH_KEY}}"></div>
+<script type="text/javascript">
+
+// pusher stuff
+var config = document.getElementById('pusher').dataset;
+var pusher = new Pusher(config.key, {encrypted:true});
+
+Pusher.channel_auth_endpoint = 'http://localhost:3000/pusher/auth';
+pusher.connection.bind('state_change', function(states) {
+    console.log("Pusher's current state is " + states.current);
+});
+
+// subscribe to channel
+var channel = pusher.subscribe('private-rubies');
+
+channel.bind('pusher:subscription_succeeded', function() {
+  console.log('subscription succeeded');
+});
+
+var button = '';
+button.addEventListener("click", sendData(234), false);
+
+
+function sendData(uniqueID) {
+  channel.trigger(
+    'client-audience_member',
+    {
+      "person": uniqueID
+    }
+  );
+}
+
+
+</script>
+</body>
+</html>
