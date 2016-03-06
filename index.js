@@ -7,6 +7,7 @@ var HTMLing = require('htmling');
 
 
 app.use("/public", express.static(__dirname + '/public'));
+app.use("/d3", express.static(__dirname + '/node_modules/d3'));
 app.use(bodyParser.urlencoded());
 
 app.engine('html', HTMLing.express(__dirname + '/views/'));

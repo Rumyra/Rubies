@@ -15,11 +15,60 @@
   <meta name="dcterms.rightsHolder" content="Ruth John for Rumyra Ltd, United Kingdom, 2015">
   <title>Get your Ruby!</title>
 
-  <link href="css/audience.css" rel="stylesheet" type="text/css">
+  <link href="public/css/audience.css" rel="stylesheet" type="text/css">
   <script src="https://js.pusher.com/3.0/pusher.min.js"></script>
   
 </head>
 <body class="audience">
+
+  <article id="controls">
+    <header><h2>Control Your Gem!</h2></header>
+
+    <form>
+
+      <h4 >Choose your gem:</h4>
+      <div class="form-field">
+        <input type="radio" name="gem-type" id="ruby" value="ruby" checked="checked" class="input-radio" />
+        <label for="ruby" class="label-radio">Ruby</label>
+        <input type="radio" name="gem-type" id="sapphire" value="sapphire" class="input-radio" />
+        <label for="sapphire" class="label-radio">Sapphire</label>
+        <input type="radio" name="gem-type" id="emerald" value="emerald" class="input-radio" />
+        <label for="emerald" class="label-radio">Emerald</label>
+      </div>
+
+      <h4 for="freq-size">Frequency for size:</h4>
+      <div class="form-field">
+        <input type="radio" name="freq-size" id="size-low" value="low" checked="checked" class="input-radio" />
+        <label for="size-low" class="label-radio">Low</label>
+        <input type="radio" name="freq-size" id="size-mid" value="mid" class="input-radio" />
+        <label for="size-mid" class="label-radio">Mid</label>
+        <input type="radio" name="freq-size" id="size-high" value="high" class="input-radio" />
+        <label for="size-high" class="label-radio">High</label>
+      </div>
+
+      <h4 for="freq-flash">Frequency for flash:</h4>
+      <div class="form-field">
+        <input type="radio" name="freq-flash" id="flash-low" value="low" checked="checked" class="input-radio" />
+        <label for="flash-low" class="label-radio">Low</label>
+        <input type="radio" name="freq-flash" id="flash-mid" value="mid" class="input-radio" />
+        <label for="flash-mid" class="label-radio">Mid</label>
+        <input type="radio" name="freq-flash" id="flash-high" value="high" class="input-radio" />
+        <label for="flash-high" class="label-radio">High</label>
+      </div>
+
+      <h4 for="freq-rotate">Frequency for rotate:</h4>
+      <div class="form-field">
+        <input type="radio" name="freq-rotate" id="rotate-low" value="low" checked="checked" class="input-radio" />
+        <label for="rotate-low" class="label-radio">Low</label>
+        <input type="radio" name="freq-rotate" id="rotate-mid" value="mid" class="input-radio" />
+        <label for="rotate-mid" class="label-radio">Mid</label>
+        <input type="radio" name="freq-rotate" id="rotate-high" value="high" class="input-radio" />
+        <label for="rotate-high" class="label-radio">High</label>
+      </div>
+
+    </form>
+
+  </article>
 
 <div id="pusher" data-key="{{PUSH_KEY}}"></div>
 <script type="text/javascript">
@@ -38,21 +87,44 @@ var channel = pusher.subscribe('private-rubies');
 
 channel.bind('pusher:subscription_succeeded', function() {
   console.log('subscription succeeded');
-});
-
-var button = '';
-button.addEventListener("click", sendData(234), false);
-
-
-function sendData(uniqueID) {
   channel.trigger(
-    'client-audience_member',
+    'client-audience_joined',
     {
       "person": uniqueID
+    }  
+  );
+});
+
+
+
+// when user taps option send data
+
+//create user id - FUCKING CHANGE THIS
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+var uniqueID = getRandomInt(0,999);
+
+
+var allLabels = document.getElementsByTagName('label');
+
+for (var i=0; i<allLabels.length; i++) {
+  var previousInput = allLabels[i].previousElementSibling;
+  allLabels[i].addEventListener("click", function() { sendData(uniqueID, previousInput); }, false);
+}
+
+// send data function
+function sendData(uniqueID, inputEl) {
+  console.log(inputEl);
+  channel.trigger(
+    'client-audience_data',
+    {
+      "person": uniqueID,
+      "param": inputEl.name, //can be gem-type, freq-size, freq-flash or freq-rotate
+      "setting": inputEl.value //can be ruby, sapphire, emerald, low, mid, high
     }
   );
 }
-
 
 </script>
 </body>
