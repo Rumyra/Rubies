@@ -164,17 +164,17 @@ function animateSvgs() {
     var colour;
     switch (allGemParams[i].type) {
       case 'sapphire':
-        colour = 260;
+        colour = 230;
       break;
       case 'emerald':
-        colour = 180;
+        colour = 150;
       break;
       default:
         colour = 346;
     }
     svgElement.children[0].style.fill = 'hsla('+colour+', 100%, 50%, 1)';
     
-    // flash freq
+    // if high freq flash unless
     var flashFreq;
     switch (allGemParams[i].flash) {
       case 'low':
@@ -190,25 +190,36 @@ function animateSvgs() {
       svgElement.children[0].style.fill = 'hsla('+colour+', 100%, '+(frequencyData[flashFreq]/2)+'%, 1)';
     }
     
-    // if mid freq rotate
+    // if mid freq rotate unless
     var rotateFreq;
     switch (allGemParams[i].rotate) {
       case 'low':
-        flashFreq = 80;
+        rotateFreq = 80;
       break;
       case 'high':
-        flashFreq = 350;
+        rotateFreq = 350;
       break;
       default:
-        flashFreq = 175;
+        rotateFreq = 175;
     }
-    if (frequencyData[flashFreq] > 100) {
-      rotateVal += frequencyData[flashFreq]/200;
+    if (frequencyData[rotateFreq] > 100) {
+      rotateVal = frequencyData[rotateFreq]/200;
     }
 
-    // if low freq change size
-    if (frequencyData[80] > 80) {
-      scaleVal = frequencyData[80]/100;
+    // if low freq change size unless
+    var scaleFreq;
+    switch (allGemParams[i].size) {
+      case 'mid':
+        scaleFreq = 175;
+      break;
+      case 'high':
+        scaleFreq = 350;
+      break;
+      default:
+        scaleFreq = 80;
+    }
+    if (frequencyData[scaleFreq] > 80) {
+      scaleVal = frequencyData[scaleFreq]/100;
     }
     svgElement.style.transform = 'rotate('+rotateVal+'deg) scale('+scaleVal+')';
   }
