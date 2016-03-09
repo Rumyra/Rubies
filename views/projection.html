@@ -51,19 +51,6 @@ channel.bind('pusher:subscription_succeeded', function() {
   console.log('subscription succeeded');
 });
 
-// Generating and adding gems to screen
-var screen = document.getElementById('screen');
-// On user subscribe create ruby with id
-channel.bind('client-audience_data', function(data) {
-  console.log(data);
-  // createGem(data.person, screen);
-});
-channel.bind('client-audience_joined', function(data) {
-  createGem(data.person, screen);
-});
-
-
-
 // set up audio context
 var audioContext = (window.AudioContext || window.webkitAudioContext);
 // create audio class
@@ -88,20 +75,71 @@ function createAnalyserNode(audioSource) {
   analyserNode.fftSize = 2048;
   audioSource.connect(analyserNode);
 }
-// animate rotate
-function changeRotateFreq(freqRange, svgId) {
-  svgEl = document.getElementById(svgId);
-  analyserNode.getByteFrequencyData(frequencyData);
-  var freqIndex = 300;
-  if (freqRange == 'low') {
-    freqIndex = 80
-  } else if (freqRange == 'mid') {
-    freqIndex = 175
-  }
-  if (frequencyData[freqIndex] > 80) {
-    svgId.style.transform = 'rotate('+(frequencyData[freqIndex]/10)+'deg)';  
+
+function oneGem(id) {
+  this.id = id;
+  this.type = 'ruby';
+  this.size = 'low';
+  this.rotate = 'mid';
+  this.flash = 'high';
+}
+var allGemParams = [],
+  screen = document.getElementById('screen'),
+  firstGem = new oneGem(000);
+// make at least one gem
+allGemParams.push(firstGem);
+createGem(000, screen);
+function updateGemArray(id, param, value) {
+  for (var i=0; i<allGemParams.length; i++) {
+    if (id === allGemParams[i].id) {
+      switch (param) {
+        case 'gem-type':
+          allGemParams[i].type = value;
+        break;
+        case 'freq-size':
+          allGemParams[i].size = value;
+        break;
+        case 'freq-flash':
+          allGemParams[i].flash = value;
+        break;
+        case 'freq-rotate':
+          allGemParams[i].rotate = value;
+          console.log(allGemParams[i]);
+        break;
+      }
+
+    }
   }
 }
+
+channel.bind('client-audience_joined', function(data) {
+  createGem(data.person, screen);
+  var thisGem = new oneGem(data.person);
+  allGemParams.push(thisGem);
+});
+
+channel.bind('client-audience_data', function(data) {
+  updateGemArray(data.person, data.param, data.setting);
+  setOff();
+});
+
+
+
+// animate rotate
+// function changeRotateFreq(freqRange, svgId) {
+//   svgEl = document.getElementById(svgId);
+//   analyserNode.getByteFrequencyData(frequencyData);
+//   var freqIndex = 300;
+//   if (freqRange == 'low') {
+//     freqIndex = 80
+//   } else if (freqRange == 'mid') {
+//     freqIndex = 175
+//   }
+//   if (frequencyData[freqIndex] > 80) {
+//     rotateVal = frequencyData[freqIndex]/100;
+//     svgId.style.transform = 'rotate('+(frequencyData[freqIndex]/10)+'deg)';  
+//   }
+// }
 // animate flash
 
 // animate size
@@ -115,27 +153,50 @@ function animateSvgs() {
   analyserNode.getByteFrequencyData(frequencyData);
   
   // Animation stuff--------------------------------
-  var allRepeatedEls = document.getElementsByTagName('svg');
-  var totalEls = allRepeatedEls.length;
+  // var allRepeatedEls = document.getElementsByTagName('svg');
+  var totalEls = allGemParams.length;
 
   // Simple example of changing opacity & colour -> EDIT THIS!
   for (var i=0; i<totalEls; i++) {
-    // if high freq flash
-    if (frequencyData[350] > 80) {
-      allRepeatedEls[i].children[0].style.fill = 'hsla(346, 100%, '+(frequencyData[350]/2)+'%, 1)'
+    var svgElement = document.getElementById(allGemParams[i].id);
+    
+    // flash freq
+    var flashFreq;
+    switch (allGemParams[i].flash) {
+      case 'low':
+        flashFreq = 80;
+      break;
+      case 'mid':
+        flashFreq = 175;
+      break;
+      default:
+        flashFreq = 350;
+    }
+    if (frequencyData[flashFreq] > 80) {
+      svgElement.children[0].style.fill = 'hsla(346, 100%, '+(frequencyData[flashFreq]/2)+'%, 1)'
     }
     
-
     // if mid freq rotate
-    if (frequencyData[175] > 100) {
-      rotateVal += frequencyData[175]/100;
+    var rotateFreq;
+    switch (allGemParams[i].rotate) {
+      case 'low':
+        flashFreq = 80;
+      break;
+      case 'high':
+        flashFreq = 350;
+      break;
+      default:
+        flashFreq = 175;
+    }
+    if (frequencyData[flashFreq] > 100) {
+      rotateVal += frequencyData[flashFreq]/200;
     }
 
     // if low freq change size
     if (frequencyData[80] > 80) {
       scaleVal = frequencyData[80]/100;
     }
-    allRepeatedEls[i].style.transform = 'rotate('+rotateVal+'deg) scale('+scaleVal+')';
+    svgElement.style.transform = 'rotate('+rotateVal+'deg) scale('+scaleVal+')';
   }
 }
 
@@ -149,13 +210,16 @@ function gotStream(stream) {
 }
 
 // pipe in analysing to getUserMedia
-navigator.getUserMedia(
-  {audio:true},
-  gotStream,
-  function(err) {
-    console.log("The following error occured: " + err);
-  } 
-);
+function setOff() {
+  navigator.getUserMedia(
+    {audio:true},
+    gotStream,
+    function(err) {
+      console.log("The following error occured: " + err);
+    } 
+  );
+}
+setOff();
 
 
 // var tempAr = [1,2,3,4,5,6,7];
