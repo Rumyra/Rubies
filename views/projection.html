@@ -120,7 +120,6 @@ channel.bind('client-audience_joined', function(data) {
 
 channel.bind('client-audience_data', function(data) {
   updateGemArray(data.person, data.param, data.setting);
-  setOff();
 });
 
 
@@ -159,6 +158,21 @@ function animateSvgs() {
   // Simple example of changing opacity & colour -> EDIT THIS!
   for (var i=0; i<totalEls; i++) {
     var svgElement = document.getElementById(allGemParams[i].id);
+
+    // colour
+
+    var colour;
+    switch (allGemParams[i].type) {
+      case 'sapphire':
+        colour = 260;
+      break;
+      case 'emerald':
+        colour = 180;
+      break;
+      default:
+        colour = 346;
+    }
+    svgElement.children[0].style.fill = 'hsla('+colour+', 100%, 50%, 1)';
     
     // flash freq
     var flashFreq;
@@ -173,7 +187,7 @@ function animateSvgs() {
         flashFreq = 350;
     }
     if (frequencyData[flashFreq] > 80) {
-      svgElement.children[0].style.fill = 'hsla(346, 100%, '+(frequencyData[flashFreq]/2)+'%, 1)'
+      svgElement.children[0].style.fill = 'hsla('+colour+', 100%, '+(frequencyData[flashFreq]/2)+'%, 1)';
     }
     
     // if mid freq rotate
@@ -210,16 +224,13 @@ function gotStream(stream) {
 }
 
 // pipe in analysing to getUserMedia
-function setOff() {
-  navigator.getUserMedia(
-    {audio:true},
-    gotStream,
-    function(err) {
-      console.log("The following error occured: " + err);
-    } 
-  );
-}
-setOff();
+navigator.getUserMedia(
+  {audio:true},
+  gotStream,
+  function(err) {
+    console.log("The following error occured: " + err);
+  } 
+);
 
 
 // var tempAr = [1,2,3,4,5,6,7];

@@ -59,7 +59,7 @@ svgGem.appendChild(createFacet({
 }))
 
 svgGem.appendChild(createFacet({
-  "fill": "hsla(346, 100%, 50%, 0.5)",
+  "fill": "hsla(346, 100%, 50%, 0)",
   "points": "44,25.174 65.499,37.588 65.499,62.416 44,74.826 22.499,62.416 22.499,37.588"
 }))
 
