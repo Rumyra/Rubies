@@ -66,13 +66,13 @@
         <label for="rotate-high" class="label-radio">High</label>
       </div>
 
-      <h4>View:</h4>
-      <div class="form-field">
+      <h4>Tilt your phone back!</h4>
+      <!-- <div class="form-field">
         <input type="radio" name="view" id="view-top" value="top" checked="checked" class="input-radio" />
         <label for="view-top" class="label-radio">Top</label>
         <input type="radio" name="view" id="view-side" value="side" class="input-radio" />
         <label for="view-side" class="label-radio">Side</label>
-      </div>
+      </div> -->
 
     </form>
 
@@ -136,13 +136,28 @@ function sendData(uniqueID, inputEl) {
 if (window.DeviceOrientationEvent) {
   window.addEventListener('deviceorientation', deviceOrientationHandler, false);
 }
-      
-var deviceOrientationData;
 
 function deviceOrientationHandler(evt) {
-  deviceOrientationData = evt;
-  console.log(deviceOrientationData);
   // if beta falls below 20 send new view
+  if (evt.beta.toFixed(2) < 20) {
+    channel.trigger(
+      'client-audience_data',
+      {
+        "person": uniqueID,
+        "param": 'view', //can be gem-type, freq-size, freq-flash or freq-rotate
+        "setting": 'side' //can be ruby, sapphire, emerald, low, mid, high
+      }
+    );
+  } else if (evt.beta.toFixed(2) > 35) {
+    channel.trigger(
+      'client-audience_data',
+      {
+        "person": uniqueID,
+        "param": 'view', //can be gem-type, freq-size, freq-flash or freq-rotate
+        "setting": 'top' //can be ruby, sapphire, emerald, low, mid, high
+      }
+    );
+  }
 
   // else if it goes back above 35 go back to original
 
