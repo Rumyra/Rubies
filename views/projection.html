@@ -24,10 +24,11 @@
     background: black;
     width:100vw; height:100vh;
     box-sizing: border-box;
-    display: flex;
+    /*display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: center;*/
   }
+  #screen > div {position: absolute; top:0; left:0;}
   .svgSide {display: none;}
   #url {
     position:absolute; bottom:10px; right:50px; color:white;
@@ -37,10 +38,10 @@
 </head>
 <body class="projection">
 
-<div id="screen">
+<section id="screen">
 
   
-</div>
+</section>
 <p id="url">http://gotothis.url</p>
 
 
@@ -276,15 +277,25 @@ navigator.getUserMedia(
 //   createGem(screen);
 // }
 
-var allGems = document.getElementsByTagName('svg');
-// console.log(allGems);
+// var allDivs = d3.select("#screen div");
+// // console.log(allGems);
 
-// set layout
-var w = window.innerWidth;
-var h = window.innerHeight;
+// // set layout
+// var w = window.innerWidth;
+// var h = window.innerHeight;
 
-var force = d3.layout.force()
-.nodes(allGems).size(w,h).start();
+// var force = d3.layout
+//   .force()
+//   .nodes(allDivs)
+//   .size(w,h)
+//   .on("tick", tick);
+
+// function tick() {
+//   allDivs.attr("style", function(d) {
+//     return 'left:'+d.x+'; top: '+d.y+';';
+//   })
+
+// }
 
 
 </script>
