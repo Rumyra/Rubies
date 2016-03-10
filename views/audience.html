@@ -36,7 +36,7 @@
         <label for="emerald" class="label-radio">Emerald</label>
       </div>
 
-      <h4 for="freq-size">Frequency for size:</h4>
+      <h4>Frequency for size:</h4>
       <div class="form-field">
         <input type="radio" name="freq-size" id="size-low" value="low" checked="checked" class="input-radio" />
         <label for="size-low" class="label-radio">Low</label>
@@ -46,7 +46,7 @@
         <label for="size-high" class="label-radio">High</label>
       </div>
 
-      <h4 for="freq-flash">Frequency for flash:</h4>
+      <h4>Frequency for flash:</h4>
       <div class="form-field">
         <input type="radio" name="freq-flash" id="flash-low" value="low" class="input-radio" />
         <label for="flash-low" class="label-radio">Low</label>
@@ -56,7 +56,7 @@
         <label for="flash-high" class="label-radio">High</label>
       </div>
 
-      <h4 for="freq-rotate">Frequency for rotate:</h4>
+      <h4>Frequency for rotate:</h4>
       <div class="form-field">
         <input type="radio" name="freq-rotate" id="rotate-low" value="low" class="input-radio" />
         <label for="rotate-low" class="label-radio">Low</label>
@@ -64,6 +64,14 @@
         <label for="rotate-mid" class="label-radio">Mid</label>
         <input type="radio" name="freq-rotate" id="rotate-high" value="high" class="input-radio" />
         <label for="rotate-high" class="label-radio">High</label>
+      </div>
+
+      <h4>View:</h4>
+      <div class="form-field">
+        <input type="radio" name="view" id="view-top" value="top" checked="checked" class="input-radio" />
+        <label for="view-top" class="label-radio">Top</label>
+        <input type="radio" name="view" id="view-side" value="side" class="input-radio" />
+        <label for="view-side" class="label-radio">Side</label>
       </div>
 
     </form>
@@ -103,7 +111,7 @@ channel.bind('pusher:subscription_succeeded', function() {
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
-var uniqueID = getRandomInt(0,999);
+var uniqueID = getRandomInt(0,9999);
 
 
 var allLabels = document.getElementsByTagName('label');
@@ -124,6 +132,34 @@ function sendData(uniqueID, inputEl) {
     }
   );
 }
+
+if (window.DeviceOrientationEvent) {
+  window.addEventListener('deviceorientation', deviceOrientationHandler, false);
+}
+      
+var deviceOrientationData;
+
+function deviceOrientationHandler(evt) {
+  deviceOrientationData = evt;
+  console.log(deviceOrientationData);
+  // if beta falls below 20 send new view
+
+  // else if it goes back above 35 go back to original
+
+  // try {
+  //   timestamp.innerText = new Date(evt.timeStamp);
+  //   alpha.innerText = evt.alpha.toFixed(fixed);
+  //   beta.innerText = evt.beta.toFixed(fixed);
+  //   gamma.innerText = evt.gamma.toFixed(fixed);
+  //   var rotation = "rotate("+ evt.alpha +"deg) rotate3d(1,0,0, "+ (evt.gamma * -1)+"deg)";
+  //   h5logo.style.webkitTransform = rotation;
+  //   h5logo.style.transform = rotation;
+  // } catch (ex) {
+  //   document.getElementById("doeSupported").innerText = "NOT";
+  // }
+}
+
+
 
 </script>
 </body>

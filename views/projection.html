@@ -20,7 +20,18 @@
   <script src="d3/d3.min.js"></script>
 
   <style type="text/css">
-  #screen {background: black;}
+  #screen {
+    background: black;
+    width:100vw; height:100vh;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .svgSide {display: none;}
+  #url {
+    position:absolute; bottom:10px; right:50px; color:white;
+  }
   </style>
   
 </head>
@@ -30,7 +41,7 @@
 
   
 </div>
-
+<p id="url">http://gotothis.url</p>
 
 
 <div id="pusher" data-key="{{PUSH_KEY}}"></div>
@@ -81,7 +92,9 @@ function oneGem(id) {
   this.type = 'ruby';
   this.size = 'low';
   this.rotate = 'mid';
+  this.rotateVal = 0;
   this.flash = 'high';
+  this.view = 'top';
 }
 var allGemParams = [],
   screen = document.getElementById('screen'),
@@ -104,7 +117,9 @@ function updateGemArray(id, param, value) {
         break;
         case 'freq-rotate':
           allGemParams[i].rotate = value;
-          console.log(allGemParams[i]);
+        break;
+        case 'view':
+          allGemParams[i].view = value;
         break;
       }
 
@@ -146,7 +161,6 @@ channel.bind('client-audience_data', function(data) {
 // change colour
 
 // high 600 - 250 mid 250 - 100 low 100 - 0
-var rotateVal = 0, scaleVal = 0;
 function animateSvgs() {
   requestAnimationFrame(animateSvgs);
   analyserNode.getByteFrequencyData(frequencyData);
@@ -158,6 +172,18 @@ function animateSvgs() {
   // Simple example of changing opacity & colour -> EDIT THIS!
   for (var i=0; i<totalEls; i++) {
     var svgElement = document.getElementById(allGemParams[i].id);
+    var correctChild;
+
+    // show correct view
+    if (allGemParams[i].view === 'side') {
+      correctChild = 1;
+      svgElement.children[0].style.display = 'none';
+      svgElement.children[1].style.display = 'inline';
+    } else {
+      correctChild = 0;
+      svgElement.children[0].style.display = 'inline';
+      svgElement.children[1].style.display = 'none';
+    }
 
     // colour
 
@@ -167,12 +193,12 @@ function animateSvgs() {
         colour = 230;
       break;
       case 'emerald':
-        colour = 150;
+        colour = 152;
       break;
       default:
         colour = 346;
     }
-    svgElement.children[0].style.fill = 'hsla('+colour+', 100%, 50%, 1)';
+    svgElement.children[correctChild].children[0].style.fill = 'hsla('+colour+', 100%, 50%, 1)';
     
     // if high freq flash unless
     var flashFreq;
@@ -187,7 +213,7 @@ function animateSvgs() {
         flashFreq = 350;
     }
     if (frequencyData[flashFreq] > 80) {
-      svgElement.children[0].style.fill = 'hsla('+colour+', 100%, '+(frequencyData[flashFreq]/2)+'%, 1)';
+      svgElement.children[correctChild].children[0].style.fill = 'hsla('+colour+', 100%, '+(frequencyData[flashFreq]/2)+'%, 1)';
     }
     
     // if mid freq rotate unless
@@ -203,7 +229,8 @@ function animateSvgs() {
         rotateFreq = 175;
     }
     if (frequencyData[rotateFreq] > 100) {
-      rotateVal = frequencyData[rotateFreq]/200;
+      var rotateVal = frequencyData[rotateFreq]/200;
+      allGemParams[i].rotateVal += rotateVal;
     }
 
     // if low freq change size unless
@@ -219,9 +246,9 @@ function animateSvgs() {
         scaleFreq = 80;
     }
     if (frequencyData[scaleFreq] > 80) {
-      scaleVal = frequencyData[scaleFreq]/100;
+      var scaleVal = frequencyData[scaleFreq]/200;
     }
-    svgElement.style.transform = 'rotate('+rotateVal+'deg) scale('+scaleVal+')';
+    svgElement.style.transform = 'rotate('+allGemParams[i].rotateVal+'deg) scale('+scaleVal+')';
   }
 }
 
