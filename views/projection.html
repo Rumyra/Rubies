@@ -28,7 +28,7 @@
     justify-content: center;
     align-items: center;*/
   }
-  #screen > div {position: absolute; top:0; left:0;}
+  #screen > div {position: absolute; top:0px; left:0px;}
   .svgSide {display: none;}
   #url {
     position:absolute; bottom:10px; right:50px; color:white;
@@ -45,7 +45,7 @@
 <p id="url">http://gotothis.url</p>
 
 
-<div id="pusher" data-key="{{PUSH_KEY}}"></div>
+<span id="pusher" data-key="{{PUSH_KEY}}"></span>
 <script type="text/javascript" src="public/scripts/Gem.js"></script>
 <script type="text/javascript">
 var config = document.getElementById('pusher').dataset;
@@ -102,7 +102,7 @@ var allGemParams = [],
   firstGem = new oneGem(000);
 // make at least one gem
 allGemParams.push(firstGem);
-createGem(000, screen);
+// createGem(000, screen);
 function updateGemArray(id, param, value) {
   for (var i=0; i<allGemParams.length; i++) {
     if (id === allGemParams[i].id) {
@@ -129,7 +129,7 @@ function updateGemArray(id, param, value) {
 }
 
 channel.bind('client-audience_joined', function(data) {
-  createGem(data.person, screen);
+  // createGem(data.person, screen);
   var thisGem = new oneGem(data.person);
   allGemParams.push(thisGem);
 });
@@ -259,7 +259,7 @@ function gotStream(stream) {
     // Create an audio input from the stream.
     var audioSource = audioApi.createMediaStreamSource(stream);
     createAnalyserNode(audioSource);
-    animateSvgs();
+    // animateSvgs();
 }
 
 // pipe in analysing to getUserMedia
@@ -277,26 +277,39 @@ navigator.getUserMedia(
 //   createGem(screen);
 // }
 
-// var allDivs = d3.select("#screen div");
-// // console.log(allGems);
+var allDivs = d3.select("#screen");
+// console.log(allGems);
 
-// // set layout
-// var w = window.innerWidth;
-// var h = window.innerHeight;
+// set layout
+var w = window.innerWidth;
+var h = window.innerHeight;
 
-// var force = d3.layout
-//   .force()
-//   .nodes(allDivs)
-//   .size(w,h)
-//   .on("tick", tick);
+var force = d3.layout
+  .force()
+  .nodes(allGemParams)
+  .size(w,h)
+  .on("tick", tick);
 
-// function tick() {
-//   allDivs.attr("style", function(d) {
-//     return 'left:'+d.x+'; top: '+d.y+';';
-//   })
+function tick() {
+  d3.selectAll("div").attr("style", function(d) {
+    console.log(d)
+    return 'left:'+d.x+'px; top: '+d.y+'px;';
+  })
+}
 
-// }
+var nodes = force.nodes();
+var node = allDivs.selectAll("div.gem")
 
+function restart() {
+  node = node.data(nodes);
+
+  node.enter().append('div').attr('class', 'gem').html(function(d){
+    return createGem(d.id).outerHTML
+  })
+  force.start();
+}
+
+// restart()
 
 </script>
 </body>

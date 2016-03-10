@@ -1,4 +1,4 @@
-function createGem(uniqueId, screenEl) {
+function createGem(uniqueId) {
 
 var svgNs = "http://www.w3.org/2000/svg";
 
@@ -113,7 +113,8 @@ svgGemSide.appendChild(createFacet({
 
 svgOuterDiv.appendChild(svgGemTop);
 svgOuterDiv.appendChild(svgGemSide);
-screenEl.appendChild(svgOuterDiv);
+// screenEl.appendChild(svgOuterDiv);
+return svgOuterDiv;
 
 }
 
