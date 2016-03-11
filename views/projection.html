@@ -10,7 +10,7 @@
 
   <!--meta content-->
   <link rel="shortcut icon" href="favicon.ico" />
-  
+
   <meta name="author" content="Ruth John (@rumyra)">
   <meta name="dcterms.rightsHolder" content="Ruth John for Rumyra Ltd, United Kingdom, 2015">
   <title>Rumyra's Interactive VJing</title>
@@ -38,18 +38,18 @@
     position:absolute; bottom:10px; right:50px; color:white;
   }
   </style>
-  
+
 </head>
 <body class="projection">
 
 <section id="screen">
 
-  
+
 </section>
 <p id="url">http://gotothis.url</p>
 
 
-<div id="pusher" data-key="{{PUSH_KEY}}"></div>
+<span id="pusher" data-key="{{PUSH_KEY}}"></span>
 <script type="text/javascript" src="public/scripts/Gem.js"></script>
 <script type="text/javascript">
 var config = document.getElementById('pusher').dataset;
@@ -106,7 +106,7 @@ var allGemParams = [],
   firstGem = new oneGem(000);
 // make at least one gem
 allGemParams.push(firstGem);
-createGem(000, screen);
+// createGem(000, screen);
 function updateGemArray(id, param, value) {
   for (var i=0; i<allGemParams.length; i++) {
     if (id === allGemParams[i].id) {
@@ -133,13 +133,15 @@ function updateGemArray(id, param, value) {
 }
 
 channel.bind('client-audience_joined', function(data) {
-  createGem(data.person, screen);
+  // createGem(data.person, screen);
   var thisGem = new oneGem(data.person);
   allGemParams.push(thisGem);
+  restart()
 });
 
 channel.bind('client-audience_data', function(data) {
   updateGemArray(data.person, data.param, data.setting);
+  restart()
 });
 
 
@@ -156,7 +158,7 @@ channel.bind('client-audience_data', function(data) {
 //   }
 //   if (frequencyData[freqIndex] > 80) {
 //     rotateVal = frequencyData[freqIndex]/100;
-//     svgId.style.transform = 'rotate('+(frequencyData[freqIndex]/10)+'deg)';  
+//     svgId.style.transform = 'rotate('+(frequencyData[freqIndex]/10)+'deg)';
 //   }
 // }
 // animate flash
@@ -169,7 +171,7 @@ channel.bind('client-audience_data', function(data) {
 function animateSvgs() {
   requestAnimationFrame(animateSvgs);
   analyserNode.getByteFrequencyData(frequencyData);
-  
+
   // Animation stuff--------------------------------
   // var allRepeatedEls = document.getElementsByTagName('svg');
   var totalEls = allGemParams.length;
@@ -178,7 +180,7 @@ function animateSvgs() {
   for (var i=0; i<totalEls; i++) {
     var svgElement = document.getElementById(allGemParams[i].id);
     var correctChild;
-
+    // console.log(allGemParams[i].id)
     // show correct view
     if (allGemParams[i].view === 'side') {
       correctChild = 1;
@@ -204,7 +206,7 @@ function animateSvgs() {
         colour = 346;
     }
     svgElement.children[correctChild].children[0].style.fill = 'hsla('+colour+', 100%, 50%, 1)';
-    
+
     // if high freq flash unless
     var flashFreq;
     switch (allGemParams[i].flash) {
@@ -220,7 +222,7 @@ function animateSvgs() {
     if (frequencyData[flashFreq] > 80) {
       svgElement.children[correctChild].children[0].style.fill = 'hsla('+colour+', 100%, '+(frequencyData[flashFreq]/2)+'%, 1)';
     }
-    
+
     // if mid freq rotate unless
     var rotateFreq;
     switch (allGemParams[i].rotate) {
@@ -272,7 +274,7 @@ navigator.getUserMedia(
   gotStream,
   function(err) {
     console.log("The following error occured: " + err);
-  } 
+  }
 );
 
 
@@ -281,26 +283,39 @@ navigator.getUserMedia(
 //   createGem(screen);
 // }
 
-// var allDivs = d3.select("#screen div");
-// // console.log(allGems);
+var allDivs = d3.select("#screen");
+// console.log(allGems);
 
-// // set layout
-// var w = window.innerWidth;
-// var h = window.innerHeight;
+// set layout
+var w = window.innerWidth;
+var h = window.innerHeight;
 
-// var force = d3.layout
-//   .force()
-//   .nodes(allDivs)
-//   .size(w,h)
-//   .on("tick", tick);
+var force = d3.layout
+  .force()
+  .linkDistance(100)
+  .charge(-150)
+  .nodes(allGemParams)
+  .size([w,h])
+  .on("tick", tick);
 
-// function tick() {
-//   allDivs.attr("style", function(d) {
-//     return 'left:'+d.x+'; top: '+d.y+';';
-//   })
+function tick() {
+  d3.selectAll("div.gem").attr("style", function(d) {
+    // console.log(d)
+    return 'left:'+d.x+'px; top: '+d.y+'px;';
+  })
+}
 
-// }
+var nodes = force.nodes();
+var node = allDivs.selectAll("div.gem")
+function restart() {
+  d3.selectAll("div.gem").remove()
+  node.data(nodes).enter().append('div').attr('class', 'gem').html(function(d){
+    return createGem(d.id).outerHTML
+  })
+  force.start();
+}
 
+restart()
 
 </script>
 </body>
