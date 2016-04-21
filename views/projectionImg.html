@@ -49,11 +49,11 @@
 
 
 </section>
-<p id="url">Join In! Get yourself an emerald! Go to: http://tiny.cc/bathruby</p>
+<p id="url">Join In! Get yourself a ! Go to: http://tiny.cc/bathruby</p>
 
 
 <span id="pusher" data-key="{{PUSH_KEY}}"></span>
-<script type="text/javascript" src="public/scripts/Gem.js"></script>
+<!-- <script type="text/javascript" src="public/scripts/Gem.js"></script> -->
 <script type="text/javascript">
 var config = document.getElementById('pusher').dataset;
 var pusher = new Pusher(config.key, {encrypted:true});
@@ -95,14 +95,19 @@ function createAnalyserNode(audioSource) {
   audioSource.connect(analyserNode);
 }
 
+function createImage(uniqueID) {
+  var outerDiv = document.createElement('div');
+  outerDiv.setAttribute("id", uniqueID);
+  var theImage = document.createElement('img');
+  theImage.src = "public/images/smashinglogo.png";
+  outerDiv.appendChild(theImage);
+  return outerDiv;
+}
+
 function oneGem(id) {
   this.id = id;
-  this.type = 'emerald';
-  this.size = 'low';
-  this.rotate = 'mid';
-  this.rotateVal = 0;
-  this.flash = 'high';
-  this.view = 'top';
+  this.type = 'logo';
+  this.view = "rotate(0deg) rotate3d(1,0,0, 0deg)";
 }
 var allGemParams = [],
   screen = document.getElementById('screen'),
@@ -114,23 +119,13 @@ function updateGemArray(id, param, value) {
   for (var i=0; i<allGemParams.length; i++) {
     if (id === allGemParams[i].id) {
       switch (param) {
-        case 'gem-type':
+        case 'img-type':
           allGemParams[i].type = value;
-        break;
-        case 'freq-size':
-          allGemParams[i].size = value;
-        break;
-        case 'freq-flash':
-          allGemParams[i].flash = value;
-        break;
-        case 'freq-rotate':
-          allGemParams[i].rotate = value;
         break;
         case 'view':
           allGemParams[i].view = value;
         break;
       }
-
     }
   }
 }
@@ -148,28 +143,6 @@ channel.bind('client-audience_data', function(data) {
 });
 
 
-
-// animate rotate
-// function changeRotateFreq(freqRange, svgId) {
-//   svgEl = document.getElementById(svgId);
-//   analyserNode.getByteFrequencyData(frequencyData);
-//   var freqIndex = 300;
-//   if (freqRange == 'low') {
-//     freqIndex = 80
-//   } else if (freqRange == 'mid') {
-//     freqIndex = 175
-//   }
-//   if (frequencyData[freqIndex] > 80) {
-//     rotateVal = frequencyData[freqIndex]/100;
-//     svgId.style.transform = 'rotate('+(frequencyData[freqIndex]/10)+'deg)';
-//   }
-// }
-// animate flash
-
-// animate size
-
-// change colour
-
 // high 600 - 250 mid 250 - 100 low 100 - 0
 function animateSvgs() {
   requestAnimationFrame(animateSvgs);
@@ -181,113 +154,17 @@ function animateSvgs() {
 
   // Simple example of changing opacity & colour -> EDIT THIS!
   for (var i=0; i<totalEls; i++) {
-    var svgElement = document.getElementById(allGemParams[i].id);
-    var correctChild;
-    // console.log(allGemParams[i].id)
+    var imgElement = document.getElementById(allGemParams[i].id).children[0];
     // show correct view
-    if (allGemParams[i].view === 'side') {
-      correctChild = 1;
-      svgElement.children[0].style.display = 'none';
-      svgElement.children[1].style.display = 'inline';
+    if (allGemParams[i].type === 'logo') {
+      imgElement.src = 'public/images/smashinglogo.png';
     } else {
-      correctChild = 0;
-      svgElement.children[0].style.display = 'inline';
-      svgElement.children[1].style.display = 'none';
+      imgElement.src = 'public/images/smashing.png';
     }
 
-    // colour
+    var rotation = allGemParams[i].view;
+    imgElement.style.transform = rotation;
 
-    var colour;
-    switch (allGemParams[i].type) {
-      case 'sapphire':
-        colour = 230;
-      break;
-      case 'ruby':
-        colour = 346;
-      break;
-      default:
-        colour = 152;
-    }
-    svgElement.children[correctChild].children[0].style.fill = 'hsla('+colour+', 100%, 50%, 1)';
-
-    // if high freq flash unless
-    var flashFreq = 175;
-    if (totalEls > 1) {
-      if (totalEls < 20) {
-        flashFreq = i*20;
-      } else if (totalEls > 90) {
-        flashFreq = i*4 
-      } else {
-        flashFreq = i*10
-      }
-    }
-    // switch (allGemParams[i].flash) {
-    //   case 'low':
-    //     flashFreq = 80;
-    //   break;
-    //   case 'mid':
-    //     flashFreq = 175;
-    //   break;
-    //   default:
-    //     flashFreq = 350;
-    // }
-    if (frequencyData[flashFreq] > 80) {
-      svgElement.children[correctChild].children[0].style.fill = 'hsla('+colour+', 100%, '+(frequencyData[flashFreq]/2)+'%, 1)';
-    }
-
-    // if mid freq rotate unless
-    // var rotateFreq;
-    // switch (allGemParams[i].rotate) {
-    //   case 'low':
-    //     rotateFreq = 80;
-    //   break;
-    //   case 'high':
-    //     rotateFreq = 350;
-    //   break;
-    //   default:
-    //     rotateFreq = 175;
-    // }
-    var rotateFreq;
-    if (totalEls > 1) {
-      if (totalEls < 20) {
-        rotateFreq = i*20;
-      } else if (totalEls > 90) {
-        rotateFreq = i*4 
-      } else {
-        rotateFreq = i*10
-      }
-    }
-    if (frequencyData[rotateFreq] > 100) {
-      var rotateVal = frequencyData[rotateFreq]/200;
-      allGemParams[i].rotateVal += rotateVal;
-    }
-
-    // if low freq change size unless
-    // var scaleFreq;
-    // switch (allGemParams[i].size) {
-    //   case 'mid':
-    //     scaleFreq = 175;
-    //   break;
-    //   case 'high':
-    //     scaleFreq = 350;
-    //   break;
-    //   default:
-    //     scaleFreq = 80;
-    // }
-    var scaleFreq = 175;
-    if (totalEls > 1) {
-      if (totalEls < 20) {
-        scaleFreq = i*20;
-      } else if (totalEls > 90) {
-        scaleFreq = i*4 
-      } else {
-        scaleFreq = i*10
-      }
-    }
-    if (frequencyData[scaleFreq] > 80) {
-      var scaleVal = frequencyData[scaleFreq]/200;
-    }
-    svgElement.style.transform = 'rotate('+allGemParams[i].rotateVal+'deg) scale('+scaleVal+')';
   }
 }
 
@@ -324,7 +201,7 @@ var h = window.innerHeight;
 
 var force = d3.layout
   .force()
-  .linkDistance(100)
+  .linkDistance(300)
   .charge(-150)
   .nodes(allGemParams)
   .size([w,h])
@@ -342,7 +219,7 @@ var node = allDivs.selectAll("div.gem")
 function restart() {
   d3.selectAll("div.gem").remove()
   node.data(nodes).enter().append('div').attr('class', 'gem').html(function(d){
-    return createGem(d.id).outerHTML
+    return createImage(d.id).outerHTML
   })
   force.start();
 }

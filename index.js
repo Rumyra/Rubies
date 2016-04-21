@@ -24,10 +24,22 @@ app.get('/projection', function(req, res){
     res.render('projection', req);
 });
 
+app.get('/oxfordjs', function(req, res){
+//  res.sendFile(__dirname + '/public/talk.html');
+    req.PUSH_KEY = process.env.PUSH_KEY;
+    res.render('oxfordjs', req);
+});
+
 app.get('/audience', function(req, res){
 //  res.sendFile(__dirname + '/public/miniMidi.html');
     req.PUSH_KEY = process.env.PUSH_KEY;
     res.render('audience', req);
+});
+
+app.get('/oxaudience', function(req, res){
+//  res.sendFile(__dirname + '/public/miniMidi.html');
+    req.PUSH_KEY = process.env.PUSH_KEY;
+    res.render('oxaudience', req);
 });
 
 // Pusher ~~~~~~~~~~~~~~~~~~~~~~~~~~~
