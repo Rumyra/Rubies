@@ -49,7 +49,7 @@
 
 
 </section>
-<p id="url">Join In! Get yourself a ! Go to: http://tiny.cc/bathruby</p>
+<p id="url">Join In! Get yourself Ben! Go to: http://tiny.cc/bathruby</p>
 
 
 <span id="pusher" data-key="{{PUSH_KEY}}"></span>
@@ -99,7 +99,7 @@ function createImage(uniqueID) {
   var outerDiv = document.createElement('div');
   outerDiv.setAttribute("id", uniqueID);
   var theImage = document.createElement('img');
-  theImage.src = "public/images/smashinglogo.png";
+  theImage.src = "public/images/benone.png";
   outerDiv.appendChild(theImage);
   return outerDiv;
 }
@@ -156,10 +156,12 @@ function animateSvgs() {
   for (var i=0; i<totalEls; i++) {
     var imgElement = document.getElementById(allGemParams[i].id).children[0];
     // show correct view
-    if (allGemParams[i].type === 'logo') {
-      imgElement.src = 'public/images/smashinglogo.png';
+    if (allGemParams[i].type === 'benthree') {
+      imgElement.src = 'public/images/benthree.png';
+    } else if (allGemParams[i].type === 'bentwo') {
+      imgElement.src = 'public/images/bentwo.png';
     } else {
-      imgElement.src = 'public/images/smashing.png';
+      imgElement.src = 'public/images/benone.png';
     }
 
     var rotation = allGemParams[i].view;

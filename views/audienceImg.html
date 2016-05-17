@@ -22,23 +22,25 @@
 <body class="audience">
 
   <article id="controls">
-    <header><h2>Control Your Image!</h2></header>
+    <header><h2>Control Your Ben!</h2></header>
 
     <div class="image">
-      <img src="public/images/smashinglogo.png" id="the-image" />
+      <img src="public/images/benone.png" id="the-image" />
     </div>
 
     <form>
 
-      <h4 >Cat or logo?</h4>
+      <h4>Choose your Ben?</h4>
       <div class="form-field">
-        <input type="radio" name="img-type" id="logo" value="logo" checked="checked" class="input-radio" />
-        <label for="logo" class="label-radio">Logo</label>
-        <input type="radio" name="img-type" id="cat" value="cat" class="input-radio" />
-        <label for="cat" class="label-radio">Cat</label>
+        <input type="radio" name="img-type" id="benone" value="benone" checked="checked" class="input-radio" />
+        <label for="benone" class="label-radio">Ben</label>
+        <input type="radio" name="img-type" id="bentwo" value="bentwo" class="input-radio" />
+        <label for="bentwo" class="label-radio">Ben</label>
+        <input type="radio" name="img-type" id="benthree" value="benthree" class="input-radio" />
+        <label for="benthree" class="label-radio">Ben</label>
       </div>
 
-      <h4>Move your image by tilting your phone</h4>
+      <h4>Tilt your phone to tile your Ben - he likes that ;)</h4>
     </form>
 
   </article>
@@ -68,6 +70,27 @@ channel.bind('pusher:subscription_succeeded', function() {
   );
 });
 
+// get Ben image - bah xdomain
+function getBen() {
+  var request = new XMLHttpRequest();
+  request.open('GET', 'http://bensholder.herokuapp.com/100/100', true);
+
+  request.onload = function() {
+    if (request.status >= 200 && request.status < 400) {
+      // Success!
+      var benImg = request.responseText;
+    } else {
+      // We reached our target server, but it returned an error
+
+    }
+  };
+
+  request.onerror = function() {
+    // There was a connection error of some sort
+  };
+
+  request.send();
+}
 
 
 // when user taps option send data
@@ -97,10 +120,12 @@ function sendData(uniqueID, inputEl) {
       "setting": inputEl.value //can be ruby, sapphire, emerald, low, mid, high
     }
   );
-  if (inputEl.value === 'logo') {
-    imageEl.src = "public/images/smashinglogo.png";
-  } else if (inputEl.value === 'cat') {
-    imageEl.src = "public/images/smashing.png";
+  if (inputEl.value === 'benthree') {
+    imageEl.src = "public/images/benthree.png";
+  } else if (inputEl.value === 'bentwo') {
+    imageEl.src = "public/images/bentwo.png";
+  } else {
+    imageEl.src = "public/images/benone.png";
   }
 }
 
@@ -114,7 +139,7 @@ var sendRotate = window.setInterval(function() {
     {
       "person": uniqueID,
       "param": "view",
-      "value": rotation
+      "setting": rotation
     }
   );
 }, 1000);
@@ -124,16 +149,11 @@ var deviceOrientationData;
 function deviceOrientationHandler(evt) {
   deviceOrientationData = evt;
   console.log(deviceOrientationData);
-
-  try {
-    rotation = "rotate("+ evt.alpha +"deg) rotate3d(1,0,0, "+ (evt.gamma * -1)+"deg)";
-    imageEl.style.webkitTransform = rotation;
-    imageEl.style.transform = rotation;
-    
-  } catch (ex) {
-    console.log('orientation not working');
-  }
+  rotation = "rotate("+ evt.alpha +"deg) rotate3d(1,0,0, "+ (evt.gamma * -1)+"deg)";
+  imageEl.style.webkitTransform = rotation;
+  imageEl.style.transform = rotation;
 }
+deviceOrientationHandler();
 
 
 

@@ -24,10 +24,10 @@ app.get('/projection', function(req, res){
     res.render('projection', req);
 });
 
-app.get('/oxfordjs', function(req, res){
+app.get('/projectionimg', function(req, res){
 //  res.sendFile(__dirname + '/public/talk.html');
     req.PUSH_KEY = process.env.PUSH_KEY;
-    res.render('oxfordjs', req);
+    res.render('projectionImg', req);
 });
 
 app.get('/audience', function(req, res){
@@ -36,10 +36,10 @@ app.get('/audience', function(req, res){
     res.render('audience', req);
 });
 
-app.get('/oxaudience', function(req, res){
+app.get('/audienceimg', function(req, res){
 //  res.sendFile(__dirname + '/public/miniMidi.html');
     req.PUSH_KEY = process.env.PUSH_KEY;
-    res.render('oxaudience', req);
+    res.render('audienceImg', req);
 });
 
 // Pusher ~~~~~~~~~~~~~~~~~~~~~~~~~~~
