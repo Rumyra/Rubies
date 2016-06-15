@@ -61,6 +61,6 @@ app.post('/pusher/auth', function(req, res) {
 
 
 // listen on port 3000
-http.listen(3000, function(){
+http.listen(3001, function(){
   console.log('listening on *:3000');
 });
